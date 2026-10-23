@@ -1,0 +1,7 @@
+{
+  "routes": [
+    { "path": "/", "title": "HolidayPredictor 首頁" },
+    { "path": "/admin", "title": "HolidayPredictor 管理後台" },
+    { "path": "/reports", "title": "災情回報" }
+  ]
+}
