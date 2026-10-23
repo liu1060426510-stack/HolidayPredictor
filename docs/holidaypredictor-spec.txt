@@ -1,0 +1,78 @@
+Build a comprehensive, production-ready, full-stack web application named "HolidayPredictor" (台灣即時放假預測與災情直播平台). 
+
+The goal of this platform is to provide real-time typhoon tracking, holiday probability predictions (停班停課機率), official announcements, live stream cameras across Taiwan, and a robust admin dashboard for platform management.
+
+---
+
+### 1. CORE FEATURES & ARCHITECTURE
+
+#### A. Public Frontend (User Interface)
+1. **Header & Emergency Notice Bar:**
+   - Real-time status ticker (e.g., "即時更新中", "目前已有 5 縣市宣布停班停課").
+   - Mandatory Legal Disclaimer: "本站預測數據由演算法結合氣象預報推算，實際停班停課資訊請以行政院人事行政總處（DGPA）及各縣市政府官方公告為準。"
+   - Light/Dark mode toggle, Mobile-responsive navbar.
+
+2. **Official Status & Prediction Dashboard (All 22 Taiwan Counties):**
+   - Filter by Region: 北部, 中部, 南部, 東部, 離島, or Search City.
+   - For each county display:
+     - **Official Status Badge:** "正常上班上課", "停止上班上課", "尚未宣布" (Highlight "停止上班上課" in bright red/orange).
+     - **Predicted Holiday Probability:** Calculated % (e.g. 85% 高機率) based on wind/rain thresholds.
+     - **Weather Parameters:** Predicted Wind Gust (陣風級數), Average Wind (平均風力), 24h Rainfall (累積雨量).
+     - **Official Benchmark Checklist:** Visual indicator whether current weather hits Taiwan's legal criteria (`天然災害停止上班及上課作業辦法`: Average Wind ≥ 7, Gust ≥ 10, or heavy rainfall threshold).
+
+3. **Live Typhoon Tracking & Radar (颱風即時位置與雷達圖):**
+   - Interactive Typhoon Map displaying current typhoon center location, wind radius (暴風圈), movement speed, and forecasted track.
+   - Embed real-time satellite / cloud radar maps (sourceable via CWA APIs or embedded interactive widget/Leaflet map).
+
+4. **Live Streaming Grid (各地即時風雨 CCTV / 直播):**
+   - Grid layout featuring embedded YouTube live streams of major spots across Taiwan (e.g., 九份, 墾丁, 高雄港, 陽明山, 花蓮立霧溪/東大門).
+   - Filter live streams by city/region so users can watch real-time storm conditions in their area.
+
+5. **Community Disaster & Wind/Rain Reporting (群眾災害回報):**
+   - Public user submission form to report local weather (e.g., "台北市大安區強風招牌掉落", "積水狀況").
+   - Moderation pipeline: User reports need Admin approval before appearing on the public feed.
+
+---
+
+#### B. Data Integration & APIs (External Data)
+- **Central Weather Administration (CWA / 中央氣象署 Open Data API):**
+  - Integrate free APIs for rainfall forecast (`F-C0032-001` / `F-D0047-091`), wind speed forecast, and real-time typhoon tracking information.
+- **DGPA (人事行政總處):**
+  - Fetch or scrape official announcements for work/school status (with graceful fallbacks and manual admin override capability).
+
+---
+
+#### C. Admin Dashboard (管理員後台)
+Requires admin authentication (JWT/Session-based auth with Role-Based Access Control).
+
+1. **Manual Override Console (緊急手動介入控制台):**
+   - Ability to manually override any city's official status ("停止上班上課" / "正常上班上課") instantly in case automatic scrapers lag.
+   - Ability to manually adjust probability algorithms or force override prediction scores.
+2. **System Announcement & Push Notification Management:**
+   - Broadcast emergency banner alerts to all active web visitors.
+   - Manage push notification triggers (Line / Web Push API integration hooks).
+3. **CCTV / Live Stream Manager:**
+   - Add, edit, delete, or organize YouTube Live stream links and embed codes for different regions.
+4. **User Report Moderation (災情回報審核):**
+   - Review, approve, or delete crowdsourced disaster reports submitted by public users.
+5. **Analytics & System Metrics:**
+   - Real-time online user counter, API fetch logs, and system performance metrics during traffic surges.
+
+---
+
+### 2. TECH STACK REQUIREMENTS
+
+- **Frontend:** React / Next.js (or Vite + React), Tailwind CSS, Lucide Icons, Leaflet/Mapbox for mapping.
+- **Backend:** Node.js (Express/Fastify) or Next.js API Routes / Python (FastAPI).
+- **Database:** SQLite / PostgreSQL (Prisma or Drizzle ORM) for storing admin settings, user reports, CCTV stream list, and historical weather logs.
+- **Real-time Updates:** WebSocket or Server-Sent Events (SSE) for instant status propagation when a county announces a holiday.
+
+---
+
+### 3. INITIAL SETUP & MOCK DATA
+
+Please seed the database and application with:
+1. Default Admin credentials for initial login (`admin@example.com` / `admin123`).
+2. Complete dataset for all 22 counties in Taiwan with mock/real-time CWA data structures.
+3. Pre-populated collection of active Taiwan YouTube weather/scenic live streams.
+4. Toggle switch in the footer/admin panel to switch between "Simulation Mode" (Test Typhoon Scenario) and "Real API Mode".
