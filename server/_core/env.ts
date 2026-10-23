@@ -9,4 +9,7 @@ export const ENV = {
   get isProduction() { return process.env.NODE_ENV === "production"; },
   get forgeApiUrl() { return process.env.MANUS_API_URL ?? ""; },
   get forgeApiKey() { return process.env.MANUS_API_KEY ?? ""; },
+  get cwaApiKey() { return process.env.CWA_API_KEY ?? ""; },
+  get cwaApiBaseUrl() { return process.env.CWA_API_BASE_URL ?? "https://opendata.cwa.gov.tw/api"; },
+  get weatherMode() { return process.env.WEATHER_MODE === "real" ? "real" : "simulation"; },
 };

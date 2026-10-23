@@ -38,6 +38,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useTheme } from "@/contexts/ThemeContext";
+import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -206,6 +207,7 @@ function ReportForm() {
 
 export default function Home() {
   const { theme, toggleTheme } = useTheme();
+  const weatherQuery = trpc.holiday.countyStatuses.useQuery(undefined, { refetchInterval: 5 * 60 * 1000 });
   const [activeNav, setActiveNav] = useState("dashboard");
   const [region, setRegion] = useState<(typeof regions)[number]>("全部");
   const [search, setSearch] = useState("");
@@ -219,13 +221,29 @@ export default function Home() {
     return () => window.clearInterval(timer);
   }, []);
 
-  const filteredCounties = useMemo(() => countyForecasts.filter((county) => {
+  const liveCounties = useMemo(() => {
+    const items = weatherQuery.data?.items;
+    if (!items?.length) return countyForecasts;
+    return countyForecasts.map((base) => {
+      const live = items.find((item) => item.countyId === base.id);
+      if (!live) return base;
+      return {
+        ...base,
+        probability: live.probability,
+        gust: live.gust,
+        wind: live.averageWind,
+        rain24h: live.rainfall24h,
+        status: live.officialStatus === "halted" ? "停止上班上課" as const : live.officialStatus === "normal" ? "正常上班上課" as const : "尚未宣布" as const,
+      };
+    });
+  }, [weatherQuery.data]);
+  const filteredCounties = useMemo(() => liveCounties.filter((county) => {
     const regionMatch = region === "全部" || county.region === region;
     const searchMatch = !search || county.name.includes(search.trim());
     return regionMatch && searchMatch;
-  }), [region, search]);
+  }), [liveCounties, region, search]);
   const filteredStreams = useMemo(() => liveStreams.filter((stream) => streamRegion === "全部" || stream.region === streamRegion), [streamRegion]);
-  const haltedCount = countyForecasts.filter((county) => county.status === "停止上班上課").length;
+  const haltedCount = liveCounties.filter((county) => county.status === "停止上班上課").length;
 
   function handleNav(id: string) {
     setActiveNav(id);

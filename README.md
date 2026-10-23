@@ -13,6 +13,8 @@
 - 群眾災情回報：回報表單、待審核狀態與已核准災情流。
 - `/admin` 管理後台：狀態覆寫、系統公告、直播管理、災情審核與系統 metrics 初始介面。
 - tRPC API 邊界與 Drizzle schema：縣市狀態、直播、災情回報、公告、氣象紀錄。
+- CWA server-side adapter：支援 `F-D0047-091` 鄉鎮三日預報，並預留 `F-C0032-001`、颱風路徑與天氣特報資料集。
+- 透明的停班停課基準模型：以平均風力、陣風、24 小時雨量／降雨機率與特報加權計算預測機率，輸出基準 checklist 與可解釋 factors。
 
 ## 本機開發
 
@@ -39,5 +41,9 @@ pnpm db:migrate  # 套用 Drizzle migrations
 ## 資料與安全注意事項
 
 目前前台使用 Simulation Mode mock data，Real API Mode 只保留切換介面；接入 CWA／DGPA 前需配置安全的 server-side secrets、API rate limit、快取與錯誤回退。規格中的 `admin@example.com`／`admin123` 僅可作為本機開發示範，正式環境必須改用密碼雜湊、環境變數與初始密碼輪替。
+
+### 啟用 CWA API
+
+先複製 `.env.example` 並在 server-side 環境設定 `CWA_API_KEY`。CWA API 的授權碼來自氣象資料開放平台會員，請勿放入前端環境變數。完成驗證後再設定 `WEATHER_MODE=real`；若授權失敗、逾時或資料無法對應縣市，服務會保留最後可用的快取或回退至 Simulation Mode，不會讓公開頁面中斷。
 
 本專案沿用 React / Express / tRPC / Drizzle starter。平台設定可透過 `webdev.config` 管理，私密金鑰只應留在 server-side。

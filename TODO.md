@@ -17,10 +17,13 @@
 - [x] 新增 `/reports` 公開回報頁入口並共用回報元件。
 - [x] 新增 Drizzle schema 的縣市狀態、直播、災情回報、公告與氣象紀錄資料表形狀。
 - [x] 新增 tRPC `holiday` router 的 mock query 與回報 mutation 邊界。
+- [x] 新增 CWA server-side adapter，支援 `F-D0047-091` 並預留 `F-C0032-001`、颱風與警特報 dataset。
+- [x] 新增透明的停班停課機率模型，輸出風力、陣風、雨量門檻與可解釋 factors。
+- [x] 將公開首頁縣市卡片接到 `holiday.countyStatuses` tRPC query，並以 5 分鐘週期更新。
 
 ## 後續整合：保留產品要求
 
-- [ ] 接入 CWA F-C0032-001、F-D0047-091、風速與即時颱風 API，包含 rate limit、快取與錯誤回退。
+- [ ] 擴充 CWA F-C0032-001、風速觀測、即時颱風與天氣特報 parser，包含正式 rate limit、快取持久化與欄位異動監控。
 - [ ] 接入 DGPA 官方公告，並將 parser 與手動 admin override 串接到正式資料庫。
 - [ ] 加入真正的 admin session／RBAC route guard 與安全的初始密碼輪替；示範帳密不可用於 production。
 - [ ] 將即時資料更新由 mock polling-ready interface 替換為 SSE 或 WebSocket。

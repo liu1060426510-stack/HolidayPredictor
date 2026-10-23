@@ -3,6 +3,7 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { adminProcedure, publicProcedure, router } from "./_core/trpc";
+import { getWeatherSnapshot } from "./weather/service";
 
 const mockCountyStatus = [
   { countyId: "taipei", countyName: "臺北市", region: "北部", officialStatus: "halted", probability: 88 },
@@ -23,11 +24,13 @@ export const appRouter = router({
     }),
   }),
   holiday: router({
-    countyStatuses: publicProcedure.query(() => ({
-      mode: "simulation" as const,
-      syncedAt: new Date().toISOString(),
-      items: mockCountyStatus,
-    })),
+    countyStatuses: publicProcedure.query(async () => {
+      const snapshot = await getWeatherSnapshot();
+      return {
+        ...snapshot,
+        syncedAt: snapshot.fetchedAt,
+      };
+    }),
     submitReport: publicProcedure
       .input(z.object({ location: z.string().min(2), category: z.string().min(1), summary: z.string().min(4) }))
       .mutation(({ input }) => ({
